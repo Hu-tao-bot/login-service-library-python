@@ -36,7 +36,7 @@ async def on_player(data: Player):
     print(data)
 
 # Generate URL
-url = gateway.generate_login_url(
+url, token = gateway.generate_login_url(
     user_id="123456789012345678",
     guild_id="123456789012345678",
     channel_id="123456789012345678",
