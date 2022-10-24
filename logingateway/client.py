@@ -6,8 +6,8 @@ import urllib.parse
 from datetime import datetime
 from typing import Any, Callable
 
-from utils import encodeToken
-from model import Player, Ready
+from .utils import encodeToken
+from .model import Player, Ready
 
 __all__ = ("HuTaoLoginAPI",)
 
