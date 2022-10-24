@@ -15,6 +15,9 @@ pip3 install setup.py
 ## Usage
 ### Simple
 ```py
+from logingateway import HuTaoLoginAPI
+from logingateway.model import Ready, Player
+
 # Init gateway
 gateway = HuTaoLoginAPI(
     "abc-123-abc-123456",
