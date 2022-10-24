@@ -44,7 +44,7 @@ class HuTaoLoginAPI:
         """
         ts = round(datetime.now().timestamp())
 
-        raw = "".join([
+        token = hashlib.sha256("".join([
             self.__client_id,
             self.__client_secret,
             guild_id,
@@ -52,7 +52,7 @@ class HuTaoLoginAPI:
             message_id,
             user_id,
             str(ts)
-        ]).encode()
+        ]).encode()).hexdigest()
         query = urllib.parse.urlencode({
             "ts": ts,
             "client_id": self.__client_id,
@@ -61,10 +61,10 @@ class HuTaoLoginAPI:
             "channel": channel_id,
             "message": message_id,
             "language": language,
-            "token": hashlib.sha256(raw).hexdigest()
+            "token": token
         })
 
-        return self.URL_LOGIN + "/?" + query
+        return self.URL_LOGIN + "/?" + query, token
 
     async def recieve_event(self, event: str, data: Any = None):
         if event == "player":
