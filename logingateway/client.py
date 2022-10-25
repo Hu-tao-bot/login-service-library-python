@@ -75,7 +75,7 @@ class HuTaoLoginAPI:
         await self.callback(event, data)
 
     async def callback(self, event: str, data):
-        func: Callable = self.__decorector[event] or self.null
+        func: Callable = self.__decorector[event] if event in self.__decorector else self.null
         if not asyncio.iscoroutinefunction(func):
             return
 
@@ -84,35 +84,54 @@ class HuTaoLoginAPI:
     async def null(self):
         return
 
-    def ready(self):
-        def callback(func: Callable):
+    def ready(self, callback: Callable):
+        def _callback(func: Callable):
             self.__decorector["ready"] = func
             return func
 
-        return callback
+        if callback:
+            self.__decorector["ready"] = callback
+            return 
 
-    def player(self):
-        def callback(func: Callable):
+        return _callback
+
+    def player(self, callback: Callable):
+        def _callback(func: Callable):
             self.__decorector["player"] = func
             return func
 
-        return callback
+        if callback:
+            self.__decorector["player"] = callback
+            return 
+        
+        return _callback
 
-    def error(self):
-        def callback(func: Callable):
-            self.__decorector["error"] = func
+    def error(self, callback: Callable):
+        def _callback(func: Callable):
+            self.__decorector["connect_error"] = func
             return func
 
-        return callback
+        if callback:
+            self.__decorector["connect_error"] = callback
+            return 
+            
+        return _callback
 
-    def disconnect(self):
-        def callback(func: Callable):
+    def disconnect(self, callback: Callable):
+        def _callback(func: Callable):
             self.__decorector["disconnect"] = func
             return func
 
-        return callback
+        if callback:
+            self.__decorector["disconnect"] = callback
+            return 
 
-    async def start(self):
+        return _callback
+
+    def start(self):
+        asyncio.ensure_future(self._start())
+
+    async def _start(self):
         await self.io.connect(self.URL, auth={
             "clientId": self.__client_id,
             "token": encodeToken(self.__client_id, self.__client_secret)
