@@ -15,6 +15,7 @@ pip3 install setup.py
 ## Usage
 - [Simple](./example/basic.py)
 - [Discord.py command](./example/discordpy.py)
+- [Discord.py cogs](./example/discord_cog/)
 
 ## License 
 MIT
