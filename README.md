@@ -18,4 +18,4 @@ pip3 install setup.py
 - [Discord.py cogs](./example/discord_cog/)
 
 ## License 
-MIT
+[MIT](./LICENSE)
