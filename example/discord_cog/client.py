@@ -3,12 +3,20 @@ import discord
 from discord.ext import commands
 
 # Config
-TOKEN = "abcd12345"
+TOKEN = ""
 
 # Discord
 intents = discord.Intents.default()
 bot = commands.Bot(command_prefix='>', intents=intents)
 
-bot.load_extension("cogs.login")
+@bot.event
+async def on_ready():
+    print("Connected")
+    try:
+        await bot.load_extension("cogs.login")
+        synced = await bot.tree.sync()
+        print(f"Synced {len(synced)} command(s)")
+    except Exception as e:
+        print(type(e))
 
 bot.run(TOKEN)

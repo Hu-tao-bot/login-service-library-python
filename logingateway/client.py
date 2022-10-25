@@ -20,9 +20,9 @@ class HuTaoLoginAPI:
         self,
         client_id: str,
         client_secret: str,
-        reconnect: int = 5
+        reconnect: int = 0
     ):
-        self.io = socketio.AsyncClient(reconnection_attempts=reconnect)
+        self.io = socketio.AsyncClient(reconnection_attempts=reconnect, reconnection=True)
         self.io.on("*", self.recieve_event)
 
         self.__decorector = {}
