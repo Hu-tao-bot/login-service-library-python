@@ -25,11 +25,12 @@ gateway = HuTaoLoginAPI(
 
 tokenStore: Dict[str, WebhookMessage] = {}
 
+
 @gateway.player()
 async def player_data(data: Player):
     if not data.token in tokenStore:
         return
-    
+
     ctx = tokenStore[data.token]
 
     # Recieved data
@@ -38,21 +39,23 @@ async def player_data(data: Player):
     # Send if success
     await ctx.edit(content="🎉 Success to login genshin")
 
+
 @gateway.ready()
 async def ready(data):
     print("Connected to Hu Tao Gateway")
 
+
 @bot.event
 async def on_ready():
     print("Connected")
-    try :
+    try:
         synced = await bot.tree.sync()
         print(f"Synced {len(synced)} command(s)")
         print("Connecting to Hu Tao Gateway...")
         await gateway.start()
     except Exception as e:
         print(e)
-    
+
 
 @bot.tree.command(name="login", description="Login Genshin account")
 async def login_genshin(ctx: Interaction):
@@ -61,10 +64,16 @@ async def login_genshin(ctx: Interaction):
         user_id=str(ctx.user.id),
         guild_id=str(ctx.guild_id),
         channel_id=str(ctx.channel_id),
-        language="th"
+        language="en"
     )
-    
-    message = await ctx.followup.send(f"Please login genshin to verify login via link\n{url}")
+
+    view = discord.ui.View()
+    view.add_item(discord.ui.Button(
+        url=url,
+        label="Login Genshin account"
+    ))
+
+    message = await ctx.followup.send(f"Please login genshin to verify login via button", view=view)
     tokenStore[token] = message
 
 bot.run(TOKEN)
