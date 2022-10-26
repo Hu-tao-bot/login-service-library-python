@@ -30,4 +30,4 @@ url, token = gateway.generate_login_url(
 )
 print(url)
 
-asyncio.run(gateway.start())
+asyncio.run(gateway._start())

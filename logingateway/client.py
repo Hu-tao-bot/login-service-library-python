@@ -22,7 +22,7 @@ class HuTaoLoginAPI:
         client_secret: str,
         reconnect: int = 0
     ):
-        self.io = socketio.AsyncClient(reconnection_attempts=reconnect, reconnection=True)
+        self.io = socketio.AsyncClient(reconnection_attempts=reconnect, reconnection=True, reconnection_delay=3)
         self.io.on("*", self.recieve_event)
 
         self.__decorector = {}
@@ -84,46 +84,46 @@ class HuTaoLoginAPI:
     async def null(self):
         return
 
-    def ready(self, callback: Callable = None):
+    def ready(self, cb: Callable = None):
         def _callback(func: Callable):
             self.__decorector["ready"] = func
             return func
 
-        if callback:
-            self.__decorector["ready"] = callback
+        if cb:
+            self.__decorector["ready"] = cb
             return 
 
         return _callback
 
-    def player(self, callback: Callable = None):
+    def player(self, cb: Callable = None):
         def _callback(func: Callable):
             self.__decorector["player"] = func
             return func
 
-        if callback:
-            self.__decorector["player"] = callback
+        if cb:
+            self.__decorector["player"] = cb
             return 
         
         return _callback
 
-    def error(self, callback: Callable = None):
+    def error(self, cb: Callable = None):
         def _callback(func: Callable):
             self.__decorector["connect_error"] = func
             return func
 
-        if callback:
-            self.__decorector["connect_error"] = callback
+        if cb:
+            self.__decorector["connect_error"] = cb
             return 
             
         return _callback
 
-    def disconnect(self, callback: Callable = None):
+    def disconnect(self, cb: Callable = None):
         def _callback(func: Callable):
             self.__decorector["disconnect"] = func
             return func
 
-        if callback:
-            self.__decorector["disconnect"] = callback
+        if cb:
+            self.__decorector["disconnect"] = cb
             return 
 
         return _callback
