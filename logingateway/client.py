@@ -84,7 +84,7 @@ class HuTaoLoginAPI:
     async def null(self):
         return
 
-    def ready(self, callback: Callable):
+    def ready(self, callback: Callable = None):
         def _callback(func: Callable):
             self.__decorector["ready"] = func
             return func
@@ -95,7 +95,7 @@ class HuTaoLoginAPI:
 
         return _callback
 
-    def player(self, callback: Callable):
+    def player(self, callback: Callable = None):
         def _callback(func: Callable):
             self.__decorector["player"] = func
             return func
@@ -106,7 +106,7 @@ class HuTaoLoginAPI:
         
         return _callback
 
-    def error(self, callback: Callable):
+    def error(self, callback: Callable = None):
         def _callback(func: Callable):
             self.__decorector["connect_error"] = func
             return func
@@ -117,7 +117,7 @@ class HuTaoLoginAPI:
             
         return _callback
 
-    def disconnect(self, callback: Callable):
+    def disconnect(self, callback: Callable = None):
         def _callback(func: Callable):
             self.__decorector["disconnect"] = func
             return func
