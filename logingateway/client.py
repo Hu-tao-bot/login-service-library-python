@@ -20,10 +20,18 @@ class HuTaoLoginAPI:
         self,
         client_id: str,
         client_secret: str,
-        reconnect: int = 0
+        reconnect: int = 0,
+        **options
     ):
-        self.io = socketio.AsyncClient(reconnection_attempts=reconnect, reconnection=True, reconnection_delay=3)
+        self.io = socketio.AsyncClient(reconnection_attempts=reconnect, reconnection=True, reconnection_delay=5)
         self.io.on("*", self.recieve_event)
+        self.io.on("connect_error", self.connect_error)
+
+        if not options.get("gateway_url") is None:
+            self.URL = options.get("gateway_url")
+
+        if not options.get("login_url") is None:
+            self.URL_LOGIN = options.get("login_url") 
 
         self.__decorector = {}
 
@@ -73,6 +81,9 @@ class HuTaoLoginAPI:
             data = Ready.parse_obj(data)
 
         await self.callback(event, data)
+
+    async def connect_error(namespace: str, data: dict):
+        raise Exception(data["message"])
 
     async def callback(self, event: str, data):
         func: Callable = self.__decorector[event] if event in self.__decorector else self.null
