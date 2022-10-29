@@ -1,6 +1,5 @@
 import asyncio
 import hashlib
-import socketio
 import urllib.parse
 
 from datetime import datetime
@@ -31,7 +30,7 @@ class HuTaoLoginAPI:
             self.URL = options.get("gateway_url")
 
         if not options.get("login_url") is None:
-            self.URL_LOGIN = options.get("login_url") 
+            self.URL_LOGIN = options.get("login_url")
 
         self.__decorector = {}
 
