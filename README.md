@@ -16,6 +16,8 @@ pip3 install setup.py
 - [Simple](./example/basic.py)
 - [Discord.py command](./example/discordpy.py)
 - [Discord.py cogs](./example/discord_cog/)
+- - [Basic](./example/discord_cog/basic/)
+- - [Redis](./example/discord_cog/redis/)
 
 ## License 
 [MIT](./LICENSE)
