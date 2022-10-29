@@ -6,6 +6,7 @@ import urllib.parse
 from datetime import datetime
 from typing import Any, Callable
 
+from .io import GatewayIO
 from .utils import encodeToken
 from .model import Player, Ready
 
@@ -20,10 +21,9 @@ class HuTaoLoginAPI:
         self,
         client_id: str,
         client_secret: str,
-        reconnect: int = 0,
         **options
     ):
-        self.io = socketio.AsyncClient(reconnection_attempts=reconnect, reconnection=True, reconnection_delay=5)
+        self.io = GatewayIO()
         self.io.on("*", self.recieve_event)
         self.io.on("connect_error", self.connect_error)
 
@@ -143,7 +143,7 @@ class HuTaoLoginAPI:
         asyncio.ensure_future(self._start())
 
     async def _start(self):
-        await self.io.connect(self.URL, auth={
+        await self.io.start(self.URL, auth={
             "clientId": self.__client_id,
             "token": encodeToken(self.__client_id, self.__client_secret)
         })
