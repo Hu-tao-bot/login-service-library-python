@@ -1,5 +1,5 @@
 import discord
-import aioredis
+from redis import asyncio as aioredis
 import json
 
 from discord import WebhookMessage, app_commands
