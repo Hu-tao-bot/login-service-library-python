@@ -23,6 +23,7 @@ class LoginGatewayCog(commands.Cog):
         # Event
         self.gateway.ready(self.gateway_connect)
         self.gateway.player(self.gateway_player)
+        self.gateway.player_update(self.gateway_player_update)
         
         # Start gateway
         print("Connecting to Hu Tao Gateway")
@@ -30,6 +31,10 @@ class LoginGatewayCog(commands.Cog):
 
     async def gateway_connect(self, data: Ready):
         print("Connected to Hu Tao Gateway")
+
+    async def gateway_player_update(self, data: Player):
+        # Recieved data
+        print(data.genshin)
 
     async def gateway_player(self, data: Player):
         if not data.token in self.tokenStore:

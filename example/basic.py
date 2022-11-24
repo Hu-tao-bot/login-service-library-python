@@ -20,6 +20,11 @@ async def on_player(data: Player):
     """
     print(data)
 
+@gateway.player_update()
+async def player_update(data: Player):
+    # Recieved player update data
+    print(data.genshin)
+
 # Generate URL
 url, token = gateway.generate_login_url(
     user_id="123456789012345678",

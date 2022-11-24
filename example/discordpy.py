@@ -28,9 +28,6 @@ tokenStore: Dict[str, WebhookMessage] = {}
 
 @gateway.player()
 async def player_data(data: Player):
-    if not data.token in tokenStore:
-        return
-
     ctx = tokenStore[data.token]
 
     # Recieved data
@@ -39,11 +36,14 @@ async def player_data(data: Player):
     # Send if success
     await ctx.edit(content="🎉 Success to login genshin")
 
+@gateway.player_update()
+async def player_update(data: Player):
+    # Recieved player update data
+    print(data.genshin)
 
 @gateway.ready()
 async def ready(data):
     print("Connected to Hu Tao Gateway")
-
 
 @bot.event
 async def on_ready():
