@@ -74,7 +74,7 @@ class HuTaoLoginAPI:
         return self.URL_LOGIN + "/?" + query, token
 
     async def recieve_event(self, event: str, data: Any = None):
-        if event == "player":
+        if event in ["player", "player_update"]:
             data = Player.parse_obj(data)
         if event == "ready":
             data = Ready.parse_obj(data)
@@ -112,6 +112,17 @@ class HuTaoLoginAPI:
 
         if cb:
             self.__decorector["player"] = cb
+            return 
+        
+        return _callback
+
+    def player_update(self, cb: Callable = None):
+        def _callback(func: Callable):
+            self.__decorector["player_update"] = func
+            return func
+
+        if cb:
+            self.__decorector["player_update"] = cb
             return 
         
         return _callback

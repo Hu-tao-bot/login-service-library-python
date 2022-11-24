@@ -8,6 +8,7 @@ __all__ = ("LoginMethod", "ServerId", "Discord",
 
 
 class LoginMethod(str, Enum):
+    UNKNOWN = "unknown"
     TOKEN = "token"
     EMAIL = "mail"
     UID = "uid"
@@ -23,9 +24,9 @@ class ServerId(str, Enum):
 
 class Discord(pydantic.BaseModel):
     user_id: str
-    guild_id: str
-    channel_id: str
-    message_id: Union[str, None]
+    guild_id: str = ''
+    channel_id: str = ''
+    message_id: Union[str, None] = ''
 
 
 class Client(pydantic.BaseModel):
@@ -40,13 +41,13 @@ class Ready(pydantic.BaseModel):
 
 
 class Genshin(pydantic.BaseModel):
-    id: int
-    userid: str
-    ltuid: str
-    ltoken: str
-    cookie_token: str
-    uid: str
-    login_type: LoginMethod
+    id: int = 0
+    userid: str = ''
+    ltuid: str = ''
+    ltoken: str = ''
+    cookie_token: str = ''
+    uid: str = ''
+    login_type: LoginMethod = ''
     server: ServerId
 
 
