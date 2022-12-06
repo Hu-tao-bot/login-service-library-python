@@ -33,11 +33,17 @@ class Client(pydantic.BaseModel):
     id: str
     name: str
 
+class ClientProfile(pydantic.BaseModel):
+    name: str
+    image: str
+    created_at: str
+    locate: str
+    color: str
 
 class Ready(pydantic.BaseModel):
     id: int
     client_id: str
-    username: str
+    profile: ClientProfile
 
 
 class Genshin(pydantic.BaseModel):
