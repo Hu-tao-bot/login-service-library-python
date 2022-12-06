@@ -1,20 +1,24 @@
 import asyncio
 import hashlib
 import urllib.parse
+import warnings
 
 from datetime import datetime
 from typing import Any, Callable
 
-from .io import GatewayIO
+from .gateway import HuTaoGateway
+
 from .utils import encodeToken
 from .model import Player, Ready
+from .callback import Callback
 
 __all__ = ("HuTaoLoginAPI",)
 
 
-class HuTaoLoginAPI:
+class HuTaoLoginAPI(Callback):
     URL: str = "https://hutao-login-gateway.m307.dev"
     URL_LOGIN: str = "https://hutao-login.m307.dev"
+    URL_API: str = "https://hutao-login-api.m307.dev/api/v0"
 
     def __init__(
         self,
@@ -22,9 +26,7 @@ class HuTaoLoginAPI:
         client_secret: str,
         **options
     ):
-        self.io = GatewayIO()
-        self.io.on("*", self.recieve_event)
-        self.io.on("connect_error", self.connect_error)
+        super().__init__()
 
         if not options.get("gateway_url") is None:
             self.URL = options.get("gateway_url")
@@ -32,10 +34,21 @@ class HuTaoLoginAPI:
         if not options.get("login_url") is None:
             self.URL_LOGIN = options.get("login_url")
 
-        self.__decorector = {}
+        if not options.get("api_url") is None:
+            self.URL_API = options.get("api_url")
 
         self.__client_id = client_id
         self.__client_secret = client_secret
+
+        self.gatway = HuTaoGateway(
+            client_id=self.__client_id,
+            client_secret=self.__client_secret,
+            gatewayURL=self.URL
+        )
+        self.gatway.on(-1, self.__disconnect)
+        self.gatway.on(101, self.__ready)
+        self.gatway.on(102, self.__recieve_event)
+        self.gatway.on(103, self.__recieve_event)
 
     def generate_login_url(
         self,
@@ -73,88 +86,37 @@ class HuTaoLoginAPI:
 
         return self.URL_LOGIN + "/?" + query, token
 
-    async def recieve_event(self, event: str, data: Any = None):
-        if event in ["player", "player_update"]:
-            data = Player.parse_obj(data)
-        if event == "ready":
-            data = Ready.parse_obj(data)
+    async def __ready(self, data: Any = None):
+        await self.callback("ready", Ready.parse_obj(data)) 
 
-        await self.callback(event, data)
+    async def __disconnect(self, data: Any = None):
+        await self.callback("disconnect", None) 
 
-    async def connect_error(namespace: str, data: dict):
-        raise Exception(data["message"])
+    async def __recieve_event(self, data: Any = None):
+        t = data.get("type").lower()
+        d = data.get("data")
 
-    async def callback(self, event: str, data):
-        func: Callable = self.__decorector[event] if event in self.__decorector else self.null
-        if not asyncio.iscoroutinefunction(func):
+        if t is None:
             return
 
+        if t in ["player_register", "player_update"]:
+            data = Player.parse_obj(d)
+        else:
+            data = d
+        
+        await self.callback(t, data)
+
+    async def callback(self, event: str, data):
+        func: Callable = self.DECORECTOR[event] if event in self.DECORECTOR else self.null
+        if not asyncio.iscoroutinefunction(func):
+            return
         asyncio.ensure_future(func(data))
 
-    async def null(self):
+    async def null(self, *args, **kwargs):
         return
-
-    def ready(self, cb: Callable = None):
-        def _callback(func: Callable):
-            self.__decorector["ready"] = func
-            return func
-
-        if cb:
-            self.__decorector["ready"] = cb
-            return 
-
-        return _callback
-
-    def player(self, cb: Callable = None):
-        def _callback(func: Callable):
-            self.__decorector["player"] = func
-            return func
-
-        if cb:
-            self.__decorector["player"] = cb
-            return 
-        
-        return _callback
-
-    def player_update(self, cb: Callable = None):
-        def _callback(func: Callable):
-            self.__decorector["player_update"] = func
-            return func
-
-        if cb:
-            self.__decorector["player_update"] = cb
-            return 
-        
-        return _callback
-
-    def error(self, cb: Callable = None):
-        def _callback(func: Callable):
-            self.__decorector["connect_error"] = func
-            return func
-
-        if cb:
-            self.__decorector["connect_error"] = cb
-            return 
-            
-        return _callback
-
-    def disconnect(self, cb: Callable = None):
-        def _callback(func: Callable):
-            self.__decorector["disconnect"] = func
-            return func
-
-        if cb:
-            self.__decorector["disconnect"] = cb
-            return 
-
-        return _callback
 
     def start(self):
         asyncio.ensure_future(self._start())
 
     async def _start(self):
-        await self.io.start(self.URL, auth={
-            "clientId": self.__client_id,
-            "token": encodeToken(self.__client_id, self.__client_secret)
-        })
-        await self.io.wait()
+        await self.gatway._start()
