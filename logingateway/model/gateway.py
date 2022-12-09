@@ -48,7 +48,7 @@ class Ready(pydantic.BaseModel):
     def __init__(self, **data: Any) -> None:
         super().__init__(**data)
         
-        self.username = data["profile"]["username"]
+        self.username = data["profile"]["name"]
 
 class Genshin(pydantic.BaseModel):
     id: int = 0
