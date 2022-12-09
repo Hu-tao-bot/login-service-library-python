@@ -6,8 +6,8 @@ from ..exception import (
     LoginRequired
 )
 from ..utils import createOffsetPage
-from .model.account import AccountHistoryToken, AccountCookieToken
-from .model.service import ServiceInfo
+from ..model.account import AccountHistoryToken, AccountCookieToken
+from ..model.service import ServiceInfo
 
 def login_required(f):
     def decorector(self, **kwargs):
