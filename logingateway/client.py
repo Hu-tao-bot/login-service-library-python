@@ -124,4 +124,5 @@ class HuTaoLoginAPI(Callback):
         asyncio.ensure_future(self._start())
 
     async def _start(self):
+        await self.api.login()
         await self.gatway._start()
