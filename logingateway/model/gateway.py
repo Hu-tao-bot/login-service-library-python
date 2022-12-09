@@ -1,7 +1,7 @@
 import pydantic
 
 from enum import Enum
-from typing import Union
+from typing import Union, Any
 
 __all__ = ("LoginMethod", "ServerId", "Discord",
            "Client", "Ready", "Genshin", "Player")
@@ -42,7 +42,13 @@ class ClientProfile(pydantic.BaseModel):
 class Ready(pydantic.BaseModel):
     id: int
     client_id: str = ''
+    username: str = ''
     profile: ClientProfile
+
+    def __init__(self, **data: Any) -> None:
+        super().__init__(**data)
+        
+        self.username = data["profile"]["username"]
 
 class Genshin(pydantic.BaseModel):
     id: int = 0
