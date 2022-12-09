@@ -17,7 +17,7 @@ class AccountHistoryToken(BaseModel):
     data: List[AccountHistoryTokenInfo] = Field([], alias="list")
 
 class AccountCookieToken(BaseModel):
-    ltuid: str
-    cookie_token: str
-    server: str
-    login_type: str
+    ltuid: str = ''
+    cookie_token: str = ''
+    server: str = ''
+    login_type: str = ''

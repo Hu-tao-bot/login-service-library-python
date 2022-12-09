@@ -1,13 +1,13 @@
 import aiohttp
 
-from typing import Dict, Any
 
 from ..exception import ERRORS
 from ..exception import (
     LoginRequired
 )
 from ..utils import createOffsetPage
-from .model.account import AccountHistoryToken
+from .model.account import AccountHistoryToken, AccountCookieToken
+from .model.service import ServiceInfo
 
 def login_required(f):
     def decorector(self, **kwargs):
@@ -87,7 +87,7 @@ class HuTaoLoginRESTAPI:
     @login_required
     async def get_service_info(self):
         resp = await self.request("user/service/info") 
-        return resp
+        return ServiceInfo.parse_obj(resp)
 
     @login_required
     async def get_history_user(self, user_id: str = "", login_type: str = "", page: int = 0) -> AccountHistoryToken:
@@ -113,7 +113,7 @@ class HuTaoLoginRESTAPI:
             "token": token,
             "show_token":show_token
         })
-        return resp
+        return AccountCookieToken.parse_obj(resp)
 
     async def login(self):
         data = await self.request("login/token", auth=aiohttp.BasicAuth(
