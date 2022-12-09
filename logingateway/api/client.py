@@ -63,6 +63,9 @@ class HuTaoLoginRESTAPI:
         await self.close()
 
     async def request(self, url: str, method: str = "GET", **kwargs):
+        # Start session
+        self.start_session()
+
         headers = {}
         if self.token != "":
             headers["Authorization"] = "Bearer %s" % self.token
