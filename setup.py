@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
 	name="hutao-login-gateway",
-	version="0.1.0",
+	version="1.0.0",
 	author="Hu Tao Bot",
 	author_email="dev@m307.dev",
 	description="Hu Tao Login Gateway server",
