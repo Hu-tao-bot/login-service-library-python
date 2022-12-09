@@ -33,15 +33,15 @@ class Client(pydantic.BaseModel):
     name: str
 
 class ClientProfile(pydantic.BaseModel):
-    name: str
-    image: str
-    created_at: str
-    locate: str
-    color: str
+    name: str = ''
+    image: str = ''
+    created_at: str = ''
+    locate: Union[str, None] = ''
+    color: Union[str, None] = ''
 
 class Ready(pydantic.BaseModel):
     id: int
-    client_id: str
+    client_id: str = ''
     profile: ClientProfile
 
 class Genshin(pydantic.BaseModel):
@@ -55,7 +55,7 @@ class Genshin(pydantic.BaseModel):
     server: ServerId
 
 class Player(pydantic.BaseModel):
-    token: str
+    token: str = ''
     discord: Discord
     client: Client
     genshin: Genshin
