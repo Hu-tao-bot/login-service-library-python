@@ -16,7 +16,6 @@ class LoginMethod(str, Enum):
     AUTHKEY = "authkey"
     MOBILE = "mobile"
 
-
 class ServerId(str, Enum):
     OVERSEA = "os"
     CHINA = "cn"
@@ -45,7 +44,6 @@ class Ready(pydantic.BaseModel):
     client_id: str
     profile: ClientProfile
 
-
 class Genshin(pydantic.BaseModel):
     id: int = 0
     userid: str = ''
@@ -55,7 +53,6 @@ class Genshin(pydantic.BaseModel):
     uid: str = ''
     login_type: LoginMethod = ''
     server: ServerId
-
 
 class Player(pydantic.BaseModel):
     token: str

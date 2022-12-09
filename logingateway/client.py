@@ -1,14 +1,13 @@
 import asyncio
 import hashlib
 import urllib.parse
-import warnings
 
 from datetime import datetime
 from typing import Any, Callable
 
 from .gateway import HuTaoGateway
+from .api import HuTaoLoginRESTAPI
 
-from .utils import encodeToken
 from .model import Player, Ready
 from .callback import Callback
 
@@ -49,6 +48,12 @@ class HuTaoLoginAPI(Callback):
         self.gatway.on(101, self.__ready)
         self.gatway.on(102, self.__recieve_event)
         self.gatway.on(103, self.__recieve_event)
+
+        self.api = HuTaoLoginRESTAPI(
+            client_id=self.__client_id,
+            client_secret=self.__client_secret,
+            apiURL=self.URL_API
+        )
 
     def generate_login_url(
         self,
@@ -120,3 +125,5 @@ class HuTaoLoginAPI(Callback):
 
     async def _start(self):
         await self.gatway._start()
+805822247
+613529949
