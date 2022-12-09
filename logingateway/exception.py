@@ -5,3 +5,34 @@ class Unauthorized(Exception):
 
 class RetryTimeout(Exception):
     """ If retry connection has timeout """
+
+
+class LoginFailed(Exception):
+    """ If Login username and password goes wrong """
+
+class LoginRequired(Exception):
+    """ If user has not logged """
+
+class UserCookieInvalid(Exception):
+    """ If user has use old account. You must remove account and login again. """
+
+class CookieTokenAlreadyLoaded(Exception):
+    """ If bot provider has been already reloaded. """
+    
+class UserTokenExpired(Exception):
+    """ If user has changed password or something in account """
+
+class UserTokenNotFound(Exception):
+    """ If token user has not found in database """
+
+class UserTokenNotSupport(Exception):
+    """ If User has login another method (Ex. UID or token) """
+
+ERRORS = {
+    2000: LoginFailed,
+    4000: UserTokenNotFound,
+    4002: CookieTokenAlreadyLoaded,
+    4010: UserTokenNotSupport,
+    4011: UserCookieInvalid,
+    4012: UserTokenExpired
+}

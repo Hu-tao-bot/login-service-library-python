@@ -40,9 +40,14 @@ class Callback:
         return _callback
 
     def error(self, cb: Callable = None):
-        warnings.warn(
-            "This function has been depercated. You can remove this function")
-        return None
+        warnings.warn("This function has been depercated. You can remove this function")
+        if cb:
+            return
+
+        def _callback(func: Callable):
+            return func
+            
+        return _callback
 
     def disconnect(self, cb: Callable = None):
         def _callback(func: Callable):
