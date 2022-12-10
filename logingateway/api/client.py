@@ -9,14 +9,6 @@ from ..utils import createOffsetPage
 from ..model.account import AccountHistoryToken, AccountCookieToken
 from ..model.service import ServiceInfo
 
-def login_required(f):
-    def decorector(self, **kwargs):
-        if self.token == "" or self.token is None:
-            raise LoginRequired("You must require login first.")
-        return f(self, **kwargs)
-
-    return decorector
-
 class HuTaoLoginRESTAPI:
     session: aiohttp.ClientSession = None
 
@@ -42,8 +34,7 @@ class HuTaoLoginRESTAPI:
     def start_session(self):
         if self.session is None:
             self.session = aiohttp.ClientSession(
-                timeout=aiohttp.ClientTimeout(10),
-                connector=aiohttp.TCPConnector(verify_ssl=False)
+                timeout=aiohttp.ClientTimeout(10)
             )
 
     async def close(self):
@@ -67,7 +58,7 @@ class HuTaoLoginRESTAPI:
         self.start_session()
 
         headers = {}
-        if self.token != "":
+        if self.token != "" and kwargs.get("auth") is None:
             headers["Authorization"] = "Bearer %s" % self.token
 
         response = await self.session.request(method, f"{self.API_URL}/{url}", headers=headers, **kwargs)
@@ -87,12 +78,10 @@ class HuTaoLoginRESTAPI:
 
         return data
 
-    @login_required
     async def get_service_info(self):
         resp = await self.request("user/service/info") 
         return ServiceInfo.parse_obj(resp)
 
-    @login_required
     async def get_history_user(self, user_id: str = "", login_type: str = "", page: int = 0) -> AccountHistoryToken:
         offset, limit = createOffsetPage(page)
 
@@ -109,7 +98,6 @@ class HuTaoLoginRESTAPI:
         resp = await self.request("accounts/history/token", "POST", params=query, json=payload)
         return AccountHistoryToken.parse_obj(resp)
 
-    @login_required
     async def reload_new_cookie(self, user_id: str, token: str, show_token: bool = True):
         resp = await self.request("accounts/cookie/reload", "POST", json={
             "user_id": user_id,
