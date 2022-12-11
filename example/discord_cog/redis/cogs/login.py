@@ -66,13 +66,14 @@ class LoginGatewayCog(commands.Cog):
         })
 
     async def reload_cookies(self, id:str):
-        history  = await self.rest.get_history_user(id,login_type='mail')
-        if history.data is not []:
-            token = history.data[0].token
-        else:
-            return None
-        new_cookie=await self.rest.reload_new_cookie(id,token)
-        return new_cookie
+        async with self.rest as rest:
+            history  = await rest.get_history_user(id,login_type='mail')
+            if history.data is not []:
+                token = history.data[0].token
+            else:
+                return None
+            new_cookie=await rest.reload_new_cookie(id,token)
+            return new_cookie
 
     @app_commands.command(name="login", description="Login Genshin account")
     async def login(self, interaction: discord.Interaction):
