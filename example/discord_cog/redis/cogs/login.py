@@ -1,5 +1,5 @@
 import discord
-import aioredis
+from redis import asyncio as aioredis
 import json
 
 from discord import WebhookMessage, app_commands
@@ -7,6 +7,7 @@ from discord.ext import commands
 from discord.http import Route
 
 from logingateway import HuTaoLoginAPI
+from logingateway.api import HuTaoLoginRESTAPI
 from logingateway.model import Player, Ready
 
 class LoginGatewayCog(commands.Cog):
@@ -20,6 +21,10 @@ class LoginGatewayCog(commands.Cog):
             url="redis://localhost:6379"
         )
         self.gateway = HuTaoLoginAPI(
+            client_id=self.CLIENT_ID,
+            client_secret=self.CLIENT_SECRET
+        )
+        self.rest = HuTaoLoginRESTAPI(
             client_id=self.CLIENT_ID,
             client_secret=self.CLIENT_SECRET
         )
@@ -60,6 +65,15 @@ class LoginGatewayCog(commands.Cog):
             "components": []
         })
 
+    async def reload_cookies(self, id:str):
+        history  = await self.rest.get_history_user(id,login_type='mail')
+        if history.data is not []:
+            token = history.data[0].token
+        else:
+            return None
+        new_cookie=await self.rest.reload_new_cookie(id,token)
+        return new_cookie
+
     @app_commands.command(name="login", description="Login Genshin account")
     async def login(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=True)
@@ -83,6 +97,15 @@ class LoginGatewayCog(commands.Cog):
             "webhook_token": interaction.token,
             "message_id": message.id,
         }), ex=expire)
+    
+    @app_commands.command(name="reload", description="Reload Redeem token")
+    async def reload(self, interaction: discord.Interaction):
+        await interaction.response.defer(ephemeral=True)
+        new_cookie = await self.reload_cookies(str(interaction.user.id))
+        if new_cookie is None:
+            await interaction.edit_original_response(content="Failed to reload redeem token, login using mail type setup")
+        else:
+            await interaction.edit_original_response(content="Successfull to reload redeem token")
 
 async def setup(client: commands.Bot):
     await client.add_cog(LoginGatewayCog(client))
