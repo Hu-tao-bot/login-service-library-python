@@ -65,14 +65,15 @@ async def on_ready():
         print(e)
 
 async def reload_cookies(id:str):
-    history  = historyStore[id] if id in historyStore else await rest_client.get_history_user(id,login_type='mail')
-    if history.data is not []:
-        token = history.data[0].token
-        historyStore[id] = token
-    else:
-        return None 
-    new_cookie=await rest_client.reload_new_cookie(id,token)
-    return new_cookie
+    async with rest_client:
+        history  = historyStore[id] if id in historyStore else await rest_client.get_history_user(id,login_type='mail')
+        if history.data is not []:
+            token = history.data[0].token
+            historyStore[id] = token
+        else:
+            return None 
+        new_cookie=await rest_client.reload_new_cookie(id,token)
+        return new_cookie
 
 
 @bot.tree.command(name="login", description="Login Genshin account")
