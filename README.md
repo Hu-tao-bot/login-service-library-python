@@ -13,11 +13,15 @@ pip3 install setup.py
 ```
 
 ## Usage
-- [Simple](./example/basic.py)
+-  [Basic login](./example/basic_cookies.py)
+-  [Basic cookie reload](./example/basic_reload.py)
 - [Discord.py command](./example/discordpy.py)
 - [Discord.py cogs](./example/discord_cog/)
 - - [Basic](./example/discord_cog/basic/)
 - - [Redis](./example/discord_cog/redis/)
+
+## Support and Questions
+- [Discord](https://discord.gg/6wADjB4qtD)
 
 ## License 
 [MIT](./LICENSE)
