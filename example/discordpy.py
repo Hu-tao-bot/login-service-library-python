@@ -4,7 +4,8 @@ from discord import Interaction, WebhookMessage
 from discord.ext import commands
 
 from logingateway import HuTaoLoginAPI
-from logingateway.model import Player
+from logingateway.model import Player,AccountCookieToken
+from logingateway.api import HuTaoLoginRESTAPI
 
 from typing import Dict
 
@@ -23,8 +24,15 @@ gateway = HuTaoLoginAPI(
     client_secret=CLIENT_SECRET
 )
 
-tokenStore: Dict[str, WebhookMessage] = {}
+# Hu Tao Login REST API
+rest_client=HuTaoLoginRESTAPI(
+    client_id=CLIENT_ID,
+    client_secret=CLIENT_SECRET
+)
 
+
+tokenStore: Dict[str, WebhookMessage] = {}
+historyStore: Dict[str, str] = {}
 
 @gateway.player()
 async def player_data(data: Player):
@@ -56,6 +64,16 @@ async def on_ready():
     except Exception as e:
         print(e)
 
+async def reload_cookies(id:str):
+    history  = historyStore[id] if id in historyStore else await rest_client.get_history_user(id,login_type='mail')
+    if history.data is not []:
+        token = history.data[0].token
+        historyStore[id] = token
+    else:
+        return None 
+    new_cookie=await rest_client.reload_new_cookie(id,token)
+    return new_cookie
+
 
 @bot.tree.command(name="login", description="Login Genshin account")
 async def login_genshin(ctx: Interaction):
@@ -75,5 +93,16 @@ async def login_genshin(ctx: Interaction):
 
     message = await ctx.followup.send(f"Please login genshin to verify login via button", view=view)
     tokenStore[token] = message
+
+@bot.tree.command(name="reload", description="Reload Redeem token")
+async def reload_genshin(ctx: Interaction):
+    await ctx.response.defer(ephemeral=True)
+    new_cookie=await reload_cookies(str(ctx.user.id))
+    if new_cookie is not None:
+        await ctx.edit_original_response(content=f"Reloaded new cookie")
+    else:
+        await ctx.edit_original_response(content=f"Failed to reload new cookie you need to login using mail type setup")
+
+    
 
 bot.run(TOKEN)
