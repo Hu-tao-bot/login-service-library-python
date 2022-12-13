@@ -158,10 +158,15 @@ class HuTaoGateway:
         while not self.__closed:
             await asyncio.sleep(interval)
             if not self.__stop_heartbeat:
-                await self.ws.send_json({
-                    "c": 1,
-                    "d": None
-                })
+                try:
+                    await self.ws.send_json({
+                        "c": 1,
+                        "d": None
+                    })
+                except:
+                    LOGGER.info("Heartbeat has stopped")
+                    break
             else:
                 LOGGER.info("Heartbeat has stopped")
+                break
             
