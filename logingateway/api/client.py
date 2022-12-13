@@ -1,10 +1,10 @@
 import aiohttp
 
-
 from ..exception import ERRORS
 from ..exception import (
-    LoginRequired
+    MaximumRetryLogin
 )
+
 from ..utils import createOffsetPage
 from ..model.account import AccountHistoryToken, AccountCookieToken
 from ..model.service import ServiceInfo
@@ -68,12 +68,10 @@ class HuTaoLoginRESTAPI:
         message = _json.get("message")
         data = _json.get("data")
 
-        # Check if data is unauthorized
-        if code == 401:
-            await self.login()
-            return await self.request(url, method, **kwargs)
+        if code != 0 and code >= 1000 and code <= 9999:
+            if code in [1020, 1021]:
+                return None
 
-        if code != 0:
             return await self.raise_error(code, message=message)
 
         return data
@@ -107,13 +105,21 @@ class HuTaoLoginRESTAPI:
         return AccountCookieToken.parse_obj(resp)
 
     async def login(self):
-        data = await self.request("login/token", auth=aiohttp.BasicAuth(
-            login=self.__client_id,
-            password=self.__client_secret
-        ))
+        MAX_LOGIN = 5
+        RETRY = 0
+        while RETRY <= MAX_LOGIN:
+            data = await self.request("login/token", auth=aiohttp.BasicAuth(
+                login=self.__client_id,
+                password=self.__client_secret
+            ))
 
-        self.token = data["token"]
-        return True
+            if not data is None:
+                self.token = data["token"]
+                return True
+            
+            RETRY += 1
+        
+        raise MaximumRetryLogin("You maximum to retry login. Please change client_id or client_secret to login again")
             
     async def raise_error(self, code: int, message: str):
         err = ERRORS.get(code, None)

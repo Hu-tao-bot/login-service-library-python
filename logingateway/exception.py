@@ -28,7 +28,22 @@ class UserTokenNotFound(Exception):
 class UserTokenNotSupport(Exception):
     """ If User has login another method (Ex. UID or token) """
 
+class TokenInvaild(Exception):
+    """ If user has send token. And validate failed """
+
+class TokenExpired(Exception):
+    """ If token has expired """
+
+class TokenSyntaxError(Exception):
+    """ Token has validate JSON failed """
+
+class MaximumRetryLogin(Exception):
+    """ Loop if max login retry """
+    
 ERRORS = {
+    1002: TokenSyntaxError,
+    1020: TokenExpired,
+    1021: TokenInvaild,
     2000: LoginFailed,
     4000: UserTokenNotFound,
     4002: CookieTokenAlreadyLoaded,
