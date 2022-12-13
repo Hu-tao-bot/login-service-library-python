@@ -40,6 +40,9 @@ class TokenSyntaxError(Exception):
 class MaximumRetryLogin(Exception):
     """ Loop if max login retry """
     
+class ConnectServerFailed(Exception):
+    """ If server has down or CF. broken """
+
 ERRORS = {
     1002: TokenSyntaxError,
     1020: TokenExpired,

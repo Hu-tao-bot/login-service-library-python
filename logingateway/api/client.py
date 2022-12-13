@@ -2,7 +2,8 @@ import aiohttp
 
 from ..exception import ERRORS
 from ..exception import (
-    MaximumRetryLogin
+    MaximumRetryLogin,
+    ConnectServerFailed
 )
 
 from ..utils import createOffsetPage
@@ -54,27 +55,35 @@ class HuTaoLoginRESTAPI:
         await self.close()
 
     async def request(self, url: str, method: str = "GET", **kwargs):
+        # Set MAX RETRY REQUEST
+        MAX_RETRY = 10
+        RETRY = 0
         # Start session
         self.start_session()
+        
+        while RETRY <= MAX_RETRY:
+            headers = {}
+            if self.token != "" and kwargs.get("auth") is None:
+                headers["Authorization"] = "Bearer %s" % self.token
 
-        headers = {}
-        if self.token != "" and kwargs.get("auth") is None:
-            headers["Authorization"] = "Bearer %s" % self.token
+            response = await self.session.request(method, f"{self.API_URL}/{url}", headers=headers, **kwargs)
+            _json = await response.json()
 
-        response = await self.session.request(method, f"{self.API_URL}/{url}", headers=headers, **kwargs)
-        _json = await response.json()
+            code = _json.get("code")
+            message = _json.get("message")
+            data = _json.get("data")
 
-        code = _json.get("code")
-        message = _json.get("message")
-        data = _json.get("data")
+            if code != 0 and code >= 1000 and code <= 9999:
+                if code in [1020, 1021]:
+                    await self.login()
+                    continue
 
-        if code != 0 and code >= 1000 and code <= 9999:
-            if code in [1020, 1021]:
-                return None
+                return await self.raise_error(code, message=message)
 
-            return await self.raise_error(code, message=message)
+            if code >= 500 or response.status >= 500:
+                raise ConnectServerFailed("Hu Tao login API has down. Please contact to me@m307.dev")
 
-        return data
+            return data
 
     async def get_service_info(self):
         resp = await self.request("user/service/info") 
@@ -105,7 +114,7 @@ class HuTaoLoginRESTAPI:
         return AccountCookieToken.parse_obj(resp)
 
     async def login(self):
-        MAX_LOGIN = 5
+        MAX_LOGIN = 15
         RETRY = 0
         while RETRY <= MAX_LOGIN:
             data = await self.request("login/token", auth=aiohttp.BasicAuth(
