@@ -8,7 +8,8 @@ from aiohttp.client_exceptions import (
     ClientConnectionError
 )
 from aiohttp import (
-    WSCloseCode
+    WSCloseCode,
+    WSServerHandshakeError
 )
 
 from .utils import encodeToken
@@ -98,9 +99,10 @@ class HuTaoGateway:
             except asyncio.CancelledError:
                 await self.close()
                 break
-            except OSError as e:
+            except (WSServerHandshakeError, OSError) as e:
                 self.__stop_heartbeat = True
-                if isinstance(e, ClientConnectionError):
+                if isinstance(e, ClientConnectionError) or \
+                    isinstance(e, WSServerHandshakeError):
                     LOGGER.error("Server has down or connection failed. Retrying ....")
 
                     # Delay
