@@ -90,12 +90,17 @@ class HuTaoGateway:
         while not self.__closed:
             # Connect to Websocket
             try:
-                self.ws = await self.session.ws_connect(self.GATEWAY_URL)
+                if self.ws is None:
+                    self.ws = await self.session.ws_connect(self.GATEWAY_URL)
 
                 # Wating recieved new message (Timeout 60 seconds)
                 async for data in self.ws:
                     if data.type is aiohttp.WSMsgType.TEXT:
                         await self.recived_message(data.data)
+                    if data.type is aiohttp.WSMsgType.ERROR:
+                        LOGGER.error("Got error from server. Please read in this error")
+                        LOGGER.error(exc)
+
             except asyncio.CancelledError:
                 await self.close()
                 break
@@ -107,16 +112,18 @@ class HuTaoGateway:
 
                     # Delay
                     if(self.__retry_count <= 10):
-                        self.__retry_count += 1
+                        self.__retry_count += 1 
 
                     if self.__retry == self.__retry_count:
                         raise RetryTimeout("Retry has timeout")
 
                     await asyncio.sleep(1 + self.__retry_count * 2)
+            except Exception as exc:
+                # Some another error 
+                LOGGER.error(exc)
             finally:
                 if not self.ws is None:
-                    if self.ws.close_code == WSCloseCode.OK:
-                        await self.close()
+                    await self.close()
                 
     async def recived_message(self, raw: Any):
         # Format JSON
