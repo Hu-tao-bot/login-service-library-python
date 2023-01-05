@@ -39,15 +39,15 @@ class HuTaoLoginAPI(Callback):
         self.__client_id = client_id
         self.__client_secret = client_secret
 
-        self.gatway = HuTaoGateway(
+        self.gateway = HuTaoGateway(
             client_id=self.__client_id,
             client_secret=self.__client_secret,
             gatewayURL=self.URL
         )
-        self.gatway.on(-1, self.__disconnect)
-        self.gatway.on(101, self.__ready)
-        self.gatway.on(102, self.__recieve_event)
-        self.gatway.on(103, self.__recieve_event)
+        self.gateway.on(-1, self.__disconnect)
+        self.gateway.on(101, self.__ready)
+        self.gateway.on(102, self.__recieve_event)
+        self.gateway.on(103, self.__recieve_event)
 
         self.api = HuTaoLoginRESTAPI(
             client_id=self.__client_id,
@@ -125,4 +125,4 @@ class HuTaoLoginAPI(Callback):
 
     async def _start(self):
         await self.api.login()
-        await self.gatway._start()
+        await self.gateway._start()
