@@ -68,7 +68,7 @@ class HuTaoGateway:
             self.__closed = True
             self.__stop_heartbeat = True
 
-        await self.__cb(-1)
+            await self.__cb(-1)
     
     def start(self):
         asyncio.ensure_future(self._start())
