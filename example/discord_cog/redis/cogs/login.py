@@ -38,6 +38,9 @@ class LoginGatewayCog(commands.Cog):
         print("Connecting to Hu Tao Gateway")
         self.gateway.start()
 
+    async def cog_unload(self) -> None:
+        self.gateway.close()
+        
     async def gateway_connect(self, data: Ready):
         print("Connected to Hu Tao Gateway")
 
