@@ -117,8 +117,8 @@ class HuTaoLoginAPI(Callback):
             return
         asyncio.ensure_future(func(data))
 
-    async def null(self, *args, **kwargs):
-        return
+    async def close(self):
+        await self.gateway.close()
 
     def start(self):
         asyncio.ensure_future(self._start())

@@ -59,3 +59,7 @@ class Callback:
             return
 
         return _callback
+
+    # IF Callback is None
+    async def null(self, *args, **kwargs):
+        return
