@@ -4,8 +4,7 @@ from discord import Interaction, WebhookMessage
 from discord.ext import commands
 
 from logingateway import HuTaoLoginAPI
-from logingateway.model import Player,AccountCookieToken
-from logingateway.api import HuTaoLoginRESTAPI
+from logingateway.model import Player
 
 from typing import Dict
 
@@ -23,13 +22,6 @@ gateway = HuTaoLoginAPI(
     client_id=CLIENT_ID,
     client_secret=CLIENT_SECRET
 )
-
-# Hu Tao Login REST API
-rest_client=HuTaoLoginRESTAPI(
-    client_id=CLIENT_ID,
-    client_secret=CLIENT_SECRET
-)
-
 
 tokenStore: Dict[str, WebhookMessage] = {}
 historyStore: Dict[str, str] = {}
@@ -65,14 +57,14 @@ async def on_ready():
         print(e)
 
 async def reload_cookies(id:str):
-    async with rest_client:
-        history  = historyStore[id] if id in historyStore else await rest_client.get_history_user(id,login_type='mail')
+    async with gateway.api:
+        history  = historyStore[id] if id in historyStore else await gateway.api.get_history_user(id,login_type='mail')
         if history.data is not []:
             token = history.data[0].token
             historyStore[id] = token
         else:
             return None 
-        new_cookie=await rest_client.reload_new_cookie(id,token)
+        new_cookie=await gateway.api.reload_new_cookie(id,token)
         return new_cookie
 
 
