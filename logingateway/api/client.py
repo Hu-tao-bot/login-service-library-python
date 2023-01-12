@@ -7,7 +7,7 @@ from ..exception import (
 )
 
 from ..utils import createOffsetPage
-from ..model.account import AccountHistoryToken, AccountCookieToken
+from ..model.account import AccountHistoryToken, AccountCookieToken, AccountToken
 from ..model.service import ServiceInfo
 
 class HuTaoLoginRESTAPI:
@@ -104,6 +104,15 @@ class HuTaoLoginRESTAPI:
 
         resp = await self.request("accounts/history/token", "POST", params=query, json=payload)
         return AccountHistoryToken.parse_obj(resp)
+
+    async def resend_token(self, user_id: str, token: str, show_token: bool = True):
+        resp = await self.request("accounts/history/token/reload", "POST", json={
+            "user_id": user_id,
+            "token": token,
+            "show_token": show_token,
+            "is_register": False
+        })
+        return AccountToken.parse_obj(resp)
 
     async def reload_new_cookie(self, user_id: str, token: str, show_token: bool = True):
         resp = await self.request("accounts/cookie/reload", "POST", json={
