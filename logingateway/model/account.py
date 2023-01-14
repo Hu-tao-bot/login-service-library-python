@@ -23,8 +23,10 @@ class AccountCookieToken(BaseModel):
     login_type: str = ''
 
 class AccountToken(BaseModel):
+    user_id: str = ''
     ltuid: str = '' 
     ltoken: str = ''
     cookie_token: str = ''
     server: str = ''
     login_type: str = ''
+    uid: str = ''
