@@ -105,12 +105,12 @@ class HuTaoLoginRESTAPI:
         resp = await self.request("accounts/history/token", "POST", params=query, json=payload)
         return AccountHistoryToken.parse_obj(resp)
 
-    async def resend_token(self, user_id: str, token: str, show_token: bool = True):
+    async def resend_token(self, user_id: str, token: str, show_token: bool = True, is_register_event: bool = False):
         resp = await self.request("accounts/history/token/reload", "POST", json={
             "user_id": user_id,
             "token": token,
             "show_token": show_token,
-            "is_register": False
+            "is_register": is_register_event
         })
         return AccountToken.parse_obj(resp)
 
