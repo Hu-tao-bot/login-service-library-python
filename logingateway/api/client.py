@@ -112,7 +112,10 @@ class HuTaoLoginRESTAPI:
             "show_token": show_token,
             "is_register": is_register_event
         })
-        return AccountToken.parse_obj(resp)
+        if resp is not None:
+            return AccountToken.parse_obj(resp)
+
+        return None
 
     async def reload_new_cookie(self, user_id: str, token: str, show_token: bool = True):
         resp = await self.request("accounts/cookie/reload", "POST", json={
@@ -120,7 +123,11 @@ class HuTaoLoginRESTAPI:
             "token": token,
             "show_token":show_token
         })
-        return AccountCookieToken.parse_obj(resp)
+
+        if resp is not None:
+            return AccountCookieToken.parse_obj(resp)
+
+        return None
 
     async def login(self):
         MAX_LOGIN = 15
