@@ -57,7 +57,7 @@ class Genshin(pydantic.BaseModel):
     ltoken: str = ''
     cookie_token: str = ''
     uid: str = ''
-    login_type: LoginMethod = ''
+    login_type: LoginMethod
     server: ServerId
 
 class Player(pydantic.BaseModel):
