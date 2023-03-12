@@ -173,9 +173,7 @@ class HuTaoGateway:
                         "d": None
                     })
                 except:
-                    LOGGER.info("Heartbeat has stopped")
                     break
             else:
-                LOGGER.info("Heartbeat has stopped")
                 break
             
