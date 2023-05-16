@@ -20,6 +20,12 @@ class ServerId(str, Enum):
     OVERSEA = "os"
     CHINA = "cn"
 
+class GameId(str, Enum):
+    UNKNOWN = ""
+    HONKAI_IMPACT = "H3D",
+    GENSHIN_IMPACT = "GI"
+    HONKAI_STAR_RAL = "HSR"
+
 
 class Discord(pydantic.BaseModel):
     user_id: str
@@ -52,6 +58,7 @@ class Ready(pydantic.BaseModel):
 
 class Genshin(pydantic.BaseModel):
     id: int = 0
+    game: GameId = GameId.UNKNOWN
     userid: str = ''
     ltuid: str = ''
     ltoken: str = ''
