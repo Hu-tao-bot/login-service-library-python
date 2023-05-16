@@ -24,7 +24,7 @@ class GameId(str, Enum):
     UNKNOWN = ""
     HONKAI_IMPACT = "H3D",
     GENSHIN_IMPACT = "GI"
-    HONKAI_STAR_RAL = "HSR"
+    HONKAI_STAR_RAIL = "HSR"
 
 
 class Discord(pydantic.BaseModel):
